@@ -1,12 +1,12 @@
 <!doctype html>
 <html>
   <head>
-    <title>Open Orchestra</title>
+    <title>String Chords</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="https://kit.fontawesome.com/77ae3a269e.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.3.1"></script>
     <script src="/scripts/helpers.js" defer></script>
     <script src="/scripts/script.js" defer></script>
@@ -32,7 +32,7 @@
         </div>
       </div>
       <div class="mx-auto order-0">
-          <a class="navbar-brand mx-auto title" href="#">Open Orchestra 🎻</a>
+          <a class="navbar-brand mx-auto title" href="#" id="navtitle">Chord Explorer 🎻</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
               <span class="navbar-toggler-icon"></span>
           </button>
@@ -40,23 +40,16 @@
       <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
         
           <ul class="navbar-nav ml-auto">   
-            <span class="navbar-text" id="usercount">
-              1 Online
-             </span>         
             <li class="nav-item">
                 <a href="#" data-toggle="modal" data-target="#myModal" data-toggle="tooltip" data-placement="top" title="Help">
                   <i class="fas fa-question" id="questionButton"></i>
                 </a>
               </li>
-              <li class="nav-item">
-                <a href="#" id="usersButton" alt="test" data-toggle="tooltip" data-placement="top" title="Toggle Multiplayer">
-                  <i class="fas fa-network-wired" id="usersButtonIcon"></i>
-                </a>
-              </li>
+
               <li class="nav-item" >
-                <a href="#" id="robotButton" data-toggle="tooltip" data-placement="top" title="Toggle AI Mode">
+                <!-- <a href="#" id="robotButton" data-toggle="tooltip" data-placement="top" title="Toggle AI Mode">
                   <i class="fas fa-robot" id="robotButtonIcon"></i>
-                </a>
+                </a> -->
               </li>
               <li class="nav-item" id="muteButton">
                 <a href="#" data-toggle="tooltip" data-placement="top" title="Mute output">
@@ -85,18 +78,31 @@
   </div>
   <div id="wrapper">
     <div id="stage"></div>
-    <div id="plate"></div>
-    <canvas id="strings" width="1200px" height="400px">
+    <canvas id="strings" width="100%" height="400px">
       Canvas not supported
     </canvas>
   </div>
-  <div id="instruments">
-    <div class="instrument" id="instrument1"><p>Bass</p></div>
-    <div class="instrument" id="instrument2"><p>Cello</p></div>
-    <div class="instrument" id="instrument3"><p>Violin</p></div>
-    <div class="instrument" id="instrument4"><p>Viola</p></div>
-    <div class="instrument" id="instrument5"><p id="instrument5text">Me (Violin)</p></div>
+  <div id="naturals">
+    <button class="chord" id="chorda"><p>A</p></button>
+    <button class="chord" id="chordas"><p>A#</p></button>
+    <button class="chord" id="chordb"><p>B</p></button>
+    <button class="chord" id="chordc"><p>C</p></button>
+    <button class="chord" id="chordcs"><p>C#</p></button>
+    <button class="chord" id="chordd"><p>D</p></button>
+    <button class="chord" id="chordds"><p>D#</p></button>
+    <button class="chord" id="chorde"><p>E</p></button>
+    <button class="chord" id="chordf"><p>F</p></button>
+    <button class="chord" id="chordfs"><p>F#</p></button>
+    <button class="chord" id="chordfs"><p>G</p></button>
+    <button class="chord" id="chordgs"><p>G#</p></button>
   </div>
+  <!-- <div id="sharps">
+    <button class="chord" id="chordas"><p>A#</p></button>
+    <button class="chord" id="chordcs"><p>C#</p></button>
+    <button class="chord" id="chordds"><p>D#</p></button>
+    <button class="chord" id="chordfs"><p>F#</p></button>
+    <button class="chord" id="chordgs"><p>G#</p></button>
+  </div> -->
   <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -109,8 +115,7 @@
         <div class="modal-body">
           <h6>Instructions</h6>
           <p>Click or drag your mouse over the strings to create music!</p>
-          <p>Toggle robot button to use scales / machine learning</p>
-          <p>Toggle the network button to see what others are playing</p>
+          <p>Explore the different chords by clicking on the colored buttons.</p>
         </div>
         <div class="modal-body">
           <h6>Credits</h6>

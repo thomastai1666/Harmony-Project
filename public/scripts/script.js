@@ -330,7 +330,7 @@ function StringInstrument(stageID, canvasID, stringNum) {
 
 StringInstrument.prototype.create = function () {
   for (var i = 0; i < this.stringNum; i++) {
-    var srect = new Rect(i, 10, 90 + i * 75, window.innerWidth * 0.8, 5);
+    var srect = new Rect(i, 0, 90 + i * 75, window.innerWidth * 0.9, 5);
     var s = new GuitarString(srect);
     this.stage.addString(srect, s);
     this.strings.push(s);
@@ -413,22 +413,49 @@ function Instrument() {
       "A4": "samples/violin-a4.mp3" //Unknown lol
     }
   );
+  this.violinPlayer.envelope = {
+    attack: 0.2,
+    decay: 0.5,
+    sustain: 0.5,
+    release: 0.1
+  }
+  this.violinPlayer.volume.value = 15;
+
   this.violaPlayer = new mm.Player.tone.Sampler(
     {
-      "D4": "samples/viola-d4.mp3", //viola_D4_05_mezzo-piano_arco-normal
-      "C3": "samples/viola-c3.mp3"//viola_C3_1_fortissimo_arco-normal
+      "A4": "samples/viola-a4.mp3" //viola_A4_15_fortissimo_arco-normal.mp3
+      //"D4": "samples/viola-d4.mp3" viola_D4_05_fortissimo_arco-normal
+      //"D4": "samples/viola-d4.mp3",viola_D4_05_mezzo-piano_arco-normal
+      // "C3": "samples/viola-c3.mp3"//viola_C3_1_fortissimo_arco-normal
     }
   );
+  this.violaPlayer.envelope = {
+    attack: 0.2,
+    decay: 0.5,
+    sustain: 0.5,
+    release: 0.1
+  }
+  this.violaPlayer.volume.value = 15;
+
+
   this.celloPlayer = new mm.Player.tone.Sampler(
     {
-      "D3": "samples/cello-d3.mp3", //cello_D3_15_fortissimo_arco-normal
-      "D4": "samples/cello-d4.mp3" //cello_D3_15_fortissimo_arco-normal
+      "A3": "samples/cello-a3.mp3"//cello_A3_15_forte_arco-normal
     }
   );
+  this.celloPlayer.envelope = {
+    attack: 0.01,
+    decay: 0.2,
+    sustain: 0.2,
+    release: 0.01
+  }
+  this.celloPlayer.volume.value = 15;
+
   this.bassPlayer = new mm.Player.tone.Sampler(
     {
       "D2": "samples/bass-d2.mp3", //double-bass_D2_15_forte_arco-normal
-      "D3": "samples/bass-d3.mp3" //double-bass_D3_15_forte_arco-normal
+      "D3": "samples/bass-d3.mp3", //double-bass_D3_15_forte_arco-normal
+      "D4": "samples/bass-d3.mp3" //double-bass_D4_15_forte_arco-normal
     }
   );
   //TODO: scales don't seem quite right
@@ -436,31 +463,57 @@ function Instrument() {
   this.violaScale = ["C3", "D3", "E3", "F3", "G3", "A4", "B4", "C4"];
   this.celloScale = ["C2", "D2", "E2", "F2", "G2", "A3", "B3", "C3"];
   this.bassScale = ["A2", "B2", "C2", "D2", "E3", "F3", "G3", "A3"];
-  this.violinPlayer.volume.value = 15;
-  this.bassPlayer.volume.value = -5;
   this.currentInstrument = "Violin";
   this.currentScale = this.violinScale;
   this.currentPlayer = this.violinPlayer;
   this.individual = false;
   this.muted = false;
-  this.robotoff = false;
-  this.genie = new mm.PianoGenie(CONSTANTS.GENIE_CHECKPOINT);
+  this.robotoff = true;
+  // this.genie = new mm.PianoGenie(CONSTANTS.GENIE_CHECKPOINT);
   this.initialize();
   return this;
 }
 
 Instrument.prototype.initialize = function () {
   this.violinPlayer.toMaster();
-  this.violaPlayer.toMaster();
-  this.celloPlayer.toMaster();
-  this.bassPlayer.toMaster();
-  this.genie.initialize().then(() => {
-    console.log('🧞‍♀️ ready!');
+  var vibrato1 = new mm.Player.tone.Vibrato({
+    maxDelay : 0.005 ,
+    frequency : 5 ,
+    depth : 0.1
+    }).toMaster();
+  this.violinPlayer.connect(vibrato1);
 
-    // Slow to start up, so do a fake prediction to warm up the model.
-    const note = this.genie.nextFromKeyWhitelist(0, keyWhitelist, TEMPERATURE);
-    this.genie.resetState();
-  });
+  this.violaPlayer.toMaster();
+  var vibrato2 = new mm.Player.tone.Vibrato({
+    maxDelay : 0.001 ,
+    frequency : 0.1 ,
+    depth : 0.5
+    }).toMaster();
+  this.violaPlayer.connect(vibrato2);
+
+  this.celloPlayer.toMaster();
+  var vibrato3 = new mm.Player.tone.Vibrato({
+    maxDelay : 0.001 ,
+    frequency : 0.2 ,
+    depth : 0.1
+    }).toMaster();
+  // this.celloPlayer.connect(vibrato3);
+
+  this.bassPlayer.toMaster();
+  var vibrato4 = new mm.Player.tone.Vibrato({
+    maxDelay : 0.001 ,
+    frequency : 1 ,
+    depth : 0.01
+    }).toMaster();
+  // this.bassPlayer.connect(vibrato4);
+
+  // this.genie.initialize().then(() => {
+  //   console.log('🧞‍♀️ ready!');
+
+  //   // Slow to start up, so do a fake prediction to warm up the model.
+  //   const note = this.genie.nextFromKeyWhitelist(0, keyWhitelist, TEMPERATURE);
+  //   this.genie.resetState();
+  // });
 
   window.addEventListener('hashchange', () => TEMPERATURE = getTemperature());
 }
@@ -515,23 +568,29 @@ Instrument.prototype.changeInstrument = function (name) {
 
 Instrument.prototype.playNote = function (stringNumber, instrument) {
   if (this.currentPlayer.loaded) {
+    var offsets = [12,7,4,0];
     var offset = 0;
     if(instrument == "Violin"){ offset += 4}
     if(instrument == "Viola"){ offset += 3}
     if(instrument == "Cello"){ offset += 1}
     if(instrument == "Bass"){ offset += 0}
-    const note = this.genie.nextFromKeyWhitelist(BUTTON_MAPPING[(Math.abs(stringNumber - 4)+ offset - 1)], keyWhitelist, TEMPERATURE);
-    const pitch = CONSTANTS.LOWEST_PIANO_KEY_MIDI_NOTE + note;
-    var noteval = mm.Player.tone.Frequency(pitch, "midi").toNote();
+    // const note = this.genie.nextFromKeyWhitelist(BUTTON_MAPPING[(Math.abs(stringNumber - 4)+ offset - 1)], keyWhitelist, TEMPERATURE);
+    // const pitch = CONSTANTS.LOWEST_PIANO_KEY_MIDI_NOTE + note;
+    // var noteval = mm.Player.tone.Frequency(pitch, "midi").toNote();
     if (this.robotoff) {
-      if(instrument == "Violin"){ noteval = this.violinScale[(Math.abs(stringNumber - 4)+ offset - 1) ] }
-      if(instrument == "Viola"){ noteval = this.violaScale[(Math.abs(stringNumber - 4)+ offset - 1) ] }
-      if(instrument == "Cello"){ noteval = this.celloScale[(Math.abs(stringNumber - 4)+ offset - 1) ]}
-      if(instrument == "Bass"){ noteval = this.bassScale[(Math.abs(stringNumber - 4)+ offset - 1) ] }
+      if(instrument == "Violin"){ noteval = mm.Player.tone.Frequency(violinRootNode + offsets[stringNumber], "midi"); }
+      if(instrument == "Viola"){ noteval = mm.Player.tone.Frequency(violaRootNode + offsets[stringNumber], "midi"); }
+      if(instrument == "Cello"){ noteval = mm.Player.tone.Frequency(celloRootNode + offsets[stringNumber], "midi"); }
+      if(instrument == "Bass"){ noteval = mm.Player.tone.Frequency(celloRootNode + offsets[stringNumber], "midi"); }
     }
+    console.log(noteval);
     this.playNoteWithVal(noteval, instrument);
-    this.showNote("#9013FE");
-    this.sendData(this.currentInstrument, noteval);
+    var colors = ["#8bc34a", "#ffea59", "#ffc107", "#ff5722", 
+    "#259b24", "#cddc39", "#ff9800", "#e51c23", "#3454b2", 
+    "#03a9f4", "#00bcd4", "#9c27b0"];
+    var colorpos = (noteval.toMidi() - 9) % 12;
+    console.log(colorpos)
+    this.showNote(colors[colorpos]);
   }
 }
   
@@ -608,14 +667,6 @@ Instrument.prototype.showNote = function (color) {
   }, 3000);
 }
 
-Instrument.prototype.sendData = function (instrument, noteVal) {
-  if(!this.individual){
-    socket.emit('chat message', [instrument, noteVal]);
-    console.log("SENT DATA", instrument, noteVal);
-  }
-}
-
-
 Instrument.prototype.receiveData = function (array) {
   // socket.emit('chat message', [instrument, noteVal]);
   //Red, Orange, Yellow, Green, Purple
@@ -650,10 +701,6 @@ Instrument.prototype.receiveData = function (array) {
   this.showNote(receivedColor);
 }
 
-
-// Create new websocket using socket.io
-var socket = io();
-
 //Create new string object
 var strings = new StringInstrument("stage", "strings", 4);
 
@@ -664,7 +711,7 @@ var instrument = new Instrument();
 instrument.changeInstrument("Violin");
 
 //Temporary hack for responsive design - refresh page 
-window.onresize = function () { location.reload(); }
+// window.onresize = function () { location.reload(); }
 
 //check for select menu changes
 $('.dropdown-item').click(function () {
@@ -682,31 +729,159 @@ $('#usersButton').click(function () {
   instrument.toggleIndividual();
 });
 
-//Toggle AI/User mode
-$('#robotButton').click(function () {
-  instrument.toggleRobot();
-});
-
-// $('#questionButton').click(function() {
-//   console.log("Test");
-//   $('#infoModal').modal('show');
-// });
-
-//Received Data from other clients
-socket.on('chat message', function (msg) {
-  if (msg) {
-    instrument.receiveData(msg);
-  }
-});
-
-socket.on('counter', function (users) {
-  console.log(users);
-  if(!users.isNaN && Number.isInteger(users) && !instrument.individual){
-    $("#usercount").text(users + " Online");
-  }
-});
 
 $( document ).ready(function() {
   $('#myModal').modal('show');
   $('#myModal').focus();
+});
+
+
+function resetStyle() {
+  //https://cdn.dribbble.com/users/634131/screenshots/2012608/material-design-colors.png
+  // background-color: #8bc34a;
+  // background-color: #ffea59;
+  // background-color: #ffc107;
+  // background-color: #ff5722;
+  // background-color: #259b24;
+  // background-color: #cddc39;
+  // background-color: #ff9800;
+  // background-color: #e51c23;
+  // background-color: #3454b2;
+  // background-color: #03a9f4;
+  // background-color: #00bcd4;
+  // background-color: #9c27b0;
+  $('#chorda').css("background-color", "#8bc34a"); 
+  $('#chordas').css("background-color", "#ffea59");
+  $('#chordb').css("background-color", "#ffc107");
+  $('#chordc').css("background-color", "#ff5722");
+  $('#chordcs').css("background-color", "#259b24");
+  $('#chordd').css("background-color", "#cddc39");
+  $('#chordds').css("background-color", "#ff9800");
+  $('#chorde').css("background-color", "#e51c23");
+  $('#chordf').css("background-color", "#3454b2");
+  $('#chordfs').css("background-color", "#03a9f4");
+  $('#chordg').css("background-color", "#00bcd4");
+  $('#chordgs').css("background-color", "#9c27b0");
+  $('.chord').css("color", "#000000");//black text
+  $('.chord').css("text-decoration", "none");//normal text
+};
+
+const VIOLINROOTVAL = 69; //A4
+var violinRootNode = VIOLINROOTVAL;
+
+const VIOLAROOTVAL = 62; //D4
+var violaRootNode = VIOLAROOTVAL;
+
+const CELLOROOTVAL = 50; //D3
+var celloRootNode = CELLOROOTVAL;
+
+const BASSROOTVAL = 50; //D2
+var bassRootNode = BASSROOTVAL;
+
+
+$('.chord').click(function () {
+  resetStyle();
+  $(this).css("text-decoration", "underline");//underlined
+  $(this).blur();
+});
+
+$('#chorda').click(function () {
+  $("#navtitle").text("A Major Chord");
+  violinRootNode = VIOLINROOTVAL + 0;
+  violaRootNode = VIOLAROOTVAL - 5;
+  celloRootNode = CELLOROOTVAL - 5;
+  bassRootNode = BASSROOTVAL - 5;
+});
+
+$('#chordas').click(function () {
+  $("#navtitle").text("A# Major Chord");
+  violinRootNode = VIOLINROOTVAL + 1;
+  violaRootNode = VIOLAROOTVAL  - 4;
+  celloRootNode = CELLOROOTVAL - 4;
+  bassRootNode = BASSROOTVAL - 4;
+});
+
+
+$('#chordb').click(function () {
+  $("#navtitle").text("B Major Chord");
+  violinRootNode = VIOLINROOTVAL + 2;
+  violaRootNode = VIOLAROOTVAL - 3;
+  celloRootNode = CELLOROOTVAL - 3;
+  bassRootNode = BASSROOTVAL - 3;
+});
+
+$('#chordc').click(function () {
+  $("#navtitle").text("C Major Chord");
+  violinRootNode = VIOLINROOTVAL + 3;
+  violaRootNode = VIOLAROOTVAL - 2;
+  celloRootNode = CELLOROOTVAL - 2;
+  bassRootNode = BASSROOTVAL - 2;
+});
+
+$('#chordcs').click(function () {
+  $("#navtitle").text("C# Major Chord");
+  violinRootNode = VIOLINROOTVAL + 4;
+  violaRootNode = VIOLAROOTVAL - 1;
+  celloRootNode = CELLOROOTVAL - 1;
+  bassRootNode = BASSROOTVAL - 1;
+});
+
+$('#chordd').click(function () {
+  $("#navtitle").text("D Major Chord");
+  violinRootNode = VIOLINROOTVAL + 5;
+  violaRootNode = VIOLAROOTVAL + 0;
+  celloRootNode = CELLOROOTVAL + 0;
+  bassRootNode = BASSROOTVAL + 0;
+});
+
+$('#chordds').click(function () {
+  $("#navtitle").text("D# Major Chord");
+  violinRootNode = VIOLINROOTVAL + 6;
+  violaRootNode = VIOLAROOTVAL + 1;
+  celloRootNode = CELLOROOTVAL + 1;
+  bassRootNode = BASSROOTVAL + 1;
+});
+
+$('#chorde').click(function () {
+  $("#navtitle").text("E Major Chord");
+  violinRootNode = VIOLINROOTVAL + 7;
+  violaRootNode = VIOLAROOTVAL + 2;
+  celloRootNode = CELLOROOTVAL + 2;
+  bassRootNode = BASSROOTVAL + 2;
+});
+
+$('#chordf').click(function () {
+  $("#navtitle").text("F Major Chord");
+  violinRootNode = VIOLINROOTVAL + 8;
+  violaRootNode = VIOLAROOTVAL + 3;
+  celloRootNode = CELLOROOTVAL + 3;
+  bassRootNode = BASSROOTVAL + 3;
+});
+
+$('#chordfs').click(function () {
+  $("#navtitle").text("F# Major Chord");
+  violinRootNode = VIOLINROOTVAL + 9;
+  violaRootNode = VIOLAROOTVAL + 4;
+  celloRootNode = CELLOROOTVAL + 4;
+  bassRootNode = BASSROOTVAL + 4;
+});
+
+$('#chordg').click(function () {
+  $("#navtitle").text("G Major Chord");
+  violinRootNode = VIOLINROOTVAL + 10;
+  violaRootNode = VIOLAROOTVAL + 5;
+  celloRootNode = CELLOROOTVAL + 5;
+  bassRootNode = BASSROOTVAL + 5;
+});
+
+$('#chordgs').click(function () {
+  $("#navtitle").text("G# Major Chord");
+  violinRootNode = VIOLINROOTVAL + 11;
+  violaRootNode = VIOLAROOTVAL + 6;
+  celloRootNode = CELLOROOTVAL + 6;
+  bassRootNode = BASSROOTVAL + 6;
+});
+
+$(document).keypress(function(e){
+  console.log(e.keyCC)
 });

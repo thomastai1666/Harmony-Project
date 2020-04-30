@@ -29,10 +29,10 @@
 
 #wrapper {
     position: relative;
-    width: 80%;
-
-    margin-left: 10%;
-    margin-right: 10%;
+    width: 90%;
+    height: 100%;
+    margin-left: 5%;
+    margin-right: 5%;
 }
 
 #stage {
@@ -48,75 +48,126 @@
 
 #strings {
     position: absolute;
+    width: 100%;
+    height: 400px;
+    z-index: 10;
     top: 0;
     left: 0;
     z-index: 9;
 }
 
-#plate {
-    position: relative;
-    top: 0;
-    left: 178px;
-    width: 270px;
-    height: 220px;
-    background: url(plate.png) center center no-repeat;    
-}
-
-#instruments {
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    flex-wrap: nowrap;
-    justify-content: center;
-    width: 80%;
-    margin-left: 10%;
-    margin-right: 10%;
-}
-
-.instrument{
-    position: relative;
-    top: 300px;
-    display: inline-block;
-    width: 18%;
-    margin-right: 1%;
-    background-color: gray;
-    height: 50px;
-    position: relative;
-    border-radius: 5px;
-    align-items: center;
-}
-
-#instrument1{
-    background-color: #ED5314;
-}
-
-#instrument2{
-    background-color: #FFB92A;
-}
-
-#instrument3{
-    background-color: #FEEB51;
-}
-
-#instrument4{
-    background-color:#9BCA3E;
-}
-
-#instrument5{
-    background-color: #9013FE;
-}
-
-.instrument > p{
+.chord > p{
     font-size: 23px;
     text-align: center;
     vertical-align: middle;
     line-height: 50px;
 }
 
+#naturals {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    height: 30%;
+    bottom: 0px;
+    /* color: black; */
+    /* background-color: black; */
+}
+
+.chord{
+    position: relative;
+    display: inline-block;
+    width: 25%;
+    height: 33.3%;
+    background-color: black;
+    /* border: 1px solid #343a40; */
+    border: none;
+    position: relative;
+    align-items: center;
+    /* padding: 3px; */
+}
+
+.chord:hover{
+  opacity: 50%;
+  color: black;
+}
+
+.chord > p{
+    font-size: 25px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 50px;
+}
+
+/* 
+background-color: #8bc34a;
+background-color: #ffea59;
+background-color: #ffc107;
+background-color: #ff5722;
+background-color: #259b24;
+background-color: #cddc39;
+background-color: #ff9800;
+background-color: #e51c23;
+background-color: #3454b2;
+background-color: #03a9f4;
+background-color: #00bcd4;
+background-color: #9c27b0;
+*/
+#chorda{
+  background-color: #8bc34a;
+  text-decoration: underline;
+}
+
+#chordas{
+  background-color: #ffea59;
+}
+
+#chordb{
+  background-color: #ffc107;
+}
+
+#chordc{
+  background-color: #ff5722;
+}
+
+#chordcs{
+  background-color: #259b24;
+}
+
+#chordd{
+  background-color: #cddc39;
+}
+
+#chordds{
+  background-color: #ff9800;
+}
+
+#chorde{
+  background-color: #e51c23;
+}
+
+#chordf{
+  background-color: #3454b2;
+}
+
+#chordfs{
+  background-color: #03a9f4;
+}
+
+#chordg{
+  background-color: #00bcd4;
+}
+
+#chordgs{
+  background-color: #9c27b0;
+}
+
 #clef{
     position: absolute;
-    left: 10%;
+    left: 5%;
     top: 162px;
     width: 100px;
     height: 230px;
@@ -124,7 +175,11 @@
 
 #clef img{
 position: absolute;
-  height: 100%;
+height: 100%;
+-moz-user-select: none;
+-webkit-user-select: none;
+-ms-user-select: none;
+user-select: none;
 }
 
 .notes {
@@ -138,6 +193,10 @@ position: absolute;
     height: 300px;
     border: 0px solid #000;
     overflow-x: hidden;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
   
   .note1,
