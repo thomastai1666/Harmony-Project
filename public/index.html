@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Open Orchestra</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/77ae3a269e.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.3.1"></script>
+    <script src="/scripts/helpers.js" defer></script>
+    <script src="/scripts/script.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+      <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Pick Instrument
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="instrumentPicker">
+            <a class="dropdown-item" href="#">Violin</a>
+            <a class="dropdown-item" href="#">Viola</a>
+            <a class="dropdown-item" href="#">Cello</a>
+            <a class="dropdown-item" href="#">Bass</a>
+          </div>
+        </div>
+      </div>
+      <div class="mx-auto order-0">
+          <a class="navbar-brand mx-auto title" href="#">Open Orchestra 🎻</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+      </div>
+      <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+        
+          <ul class="navbar-nav ml-auto">   
+            <span class="navbar-text" id="usercount">
+              1 Online
+             </span>         
+            <li class="nav-item">
+                <a href="#" data-toggle="modal" data-target="#myModal" data-toggle="tooltip" data-placement="top" title="Help">
+                  <i class="fas fa-question" id="questionButton"></i>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" id="usersButton" alt="test" data-toggle="tooltip" data-placement="top" title="Toggle Multiplayer">
+                  <i class="fas fa-network-wired" id="usersButtonIcon"></i>
+                </a>
+              </li>
+              <li class="nav-item" >
+                <a href="#" id="robotButton" data-toggle="tooltip" data-placement="top" title="Toggle AI Mode">
+                  <i class="fas fa-robot" id="robotButtonIcon"></i>
+                </a>
+              </li>
+              <li class="nav-item" id="muteButton">
+                <a href="#" data-toggle="tooltip" data-placement="top" title="Mute output">
+                  <i class="fas fa-volume-up" id="muteButtonIcon"></i>
+                </a>
+              </li>
+          </ul>
+      </div>
+  </nav>
+  <div id="clef">
+    <img src="img/trebleclef.png" id="clefimage" alt="">
+  </div>
+  <div class="notes">
+    <!-- <div class="note1">
+        &#9835; &#9833;
+      </div>
+      <div class="note2">
+        &#9833;
+      </div>
+      <div class="note3">
+        &#9834 &#9833;
+      </div>
+      <div class="note4">
+        &#9834;
+      </div> -->
+  </div>
+  <div id="wrapper">
+    <div id="stage"></div>
+    <div id="plate"></div>
+    <canvas id="strings" width="1200px" height="400px">
+      Canvas not supported
+    </canvas>
+  </div>
+  <div id="instruments">
+    <div class="instrument" id="instrument1"><p>Bass</p></div>
+    <div class="instrument" id="instrument2"><p>Cello</p></div>
+    <div class="instrument" id="instrument3"><p>Violin</p></div>
+    <div class="instrument" id="instrument4"><p>Viola</p></div>
+    <div class="instrument" id="instrument5"><p id="instrument5text">Me (Violin)</p></div>
+  </div>
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Information</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <h6>Instructions</h6>
+          <p>Click or drag your mouse over the strings to create music!</p>
+          <p>Toggle robot button to use scales / machine learning</p>
+          <p>Toggle the network button to see what others are playing</p>
+        </div>
+        <div class="modal-body">
+          <h6>Credits</h6>
+          <p>Made with Node.JS, jQuery, Socket.IO, Magenta, and Tone.JS</p>
+          <p>Sound files from London Philharmonic Orchestra</p>
+          <p>Guitar Javascript library from Google JAM with Chrome</p>
+          <p>Clef Images from Wikipedia</p>
+          <p>Created by Thomas Tai - <a href="https://github.com/thomastai1666/Open-Orchestra">Source Code</a></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  </body>
+</html>
