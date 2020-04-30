@@ -423,7 +423,7 @@ function Instrument() {
 
   this.violaPlayer = new mm.Player.tone.Sampler(
     {
-      "A4": "samples/viola-a4.mp3" //viola_A4_15_fortissimo_arco-normal.mp3
+      "B4": "samples/viola-b4.mp3" //viola_A4_15_fortissimo_arco-normal.mp3
       //"D4": "samples/viola-d4.mp3" viola_D4_05_fortissimo_arco-normal
       //"D4": "samples/viola-d4.mp3",viola_D4_05_mezzo-piano_arco-normal
       // "C3": "samples/viola-c3.mp3"//viola_C3_1_fortissimo_arco-normal
@@ -883,5 +883,43 @@ $('#chordgs').click(function () {
 });
 
 $(document).keypress(function(e){
-  console.log(e.keyCC)
+  console.log(e.keyCode)
+  switch(e.keyCode){
+    case 49:
+      $("#chorda").click();
+      break;
+    case 50:
+      $("#chordas").click();
+      break;
+    case 51:
+      $("#chordb").click();
+      break;
+    case 52:
+      $("#chordc").click();
+      break;
+    case 53:
+      $("#chordcs").click();
+      break;
+    case 54:
+      $("#chordd").click();
+      break;
+    case 55:
+      $("#chordds").click();
+      break;
+    case 56:
+      $("#chorde").click();
+      break;
+    case 57:
+      $("#chordf").click();
+       break;
+    case 48:
+      $("#chordfs").click();
+      break;
+    case 45:
+      $("#chordg").click();
+      break;
+    case 61:
+      $("#chordgs").click();
+      break;
+  }
 });
